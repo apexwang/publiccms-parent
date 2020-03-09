@@ -1,0 +1,140 @@
+<div class="pageFormContent" layoutH="0">
+<fieldset>
+    <legend><@t.page 'my_account'/></legend>
+    <div class="unit">
+        <p>
+            <label><@t.page 'myself.my_pending_content'/>:</label>
+            <a href="myself/contentList.html?status=2" icon="<i class='icon-book icon-large'></i>" title="<@t.page 'my_content'/>" target="navTab" rel="myself/contentList">
+                <@_contentList advanced=true status=2 userId=admin.id count=0>
+                    ${page.totalCount}
+                </@_contentList>
+            </a>
+        </p>
+        <p>
+            <label><@t.page 'myself.my_draft'/>:</label>
+            <a href="myself/contentList.html?status=0" icon="<i class='icon-book icon-large'></i>" title="<@t.page 'my_content'/>" target="navTab" rel="myself/contentList">
+                <@_contentList advanced=true status=0 userId=admin.id count=0>
+                    ${page.totalCount}
+                </@_contentList>
+            </a>
+        </p>
+        <p>
+            <a class="button" href="main.html" target="navTab" rel="main"><i class="icon-refresh"></i> <@t.page 'button.refresh'/></a>
+        </p>
+    </div>
+    <div class="divider"></div>
+    <div class="unit">
+        <p>
+            <label><@t.page 'user.login_count'/>:</label>
+            <a href="myself/logLogin.html" icon="<i class='icon-signin icon-large'></i>" title="<@t.page 'my_login_log'/>" target="navTab" rel="myself/logLogin">${admin.loginCount}</a>
+        </p>
+        <p>
+            <label><@t.page 'user.last_login_date'/>:</label>${admin.lastLoginDate!}
+        </p>
+        <p>
+            <label><@t.page 'user.last_login_ip'/>:</label>${admin.lastLoginIp!}
+        </p>
+        <p>
+            <label><@t.page 'my_login_token'/>:</label>
+            <a href="myself/userTokenList.html" title="<i class='icon-unlock-alt icon-large'></i> <@t.page 'my_login_token'/>" target="navTab" rel="myself/userTokenList"><@_sysUserTokenList userId=admin.id count=0>${page.totalCount}</@_sysUserTokenList></a>
+        </p>
+    </div>
+</fieldset>
+<@_sysAuthorized roleIds=admin.roles url='cmsComment/list'>
+    <fieldset>
+        <legend><@t.page 'comment.management'/></legend>
+        <div class="unit">
+            <p>
+                <label><@t.page 'comment.uncheck'/>:</label>
+                <a href="cmsComment/list.html?status=2" icon="<i class='icon-comment icon-large'></i>" title="<@t.page 'comment.management'/>" target="navTab" rel="cmsComment/list">
+                    <@_commentList advanced=true status=2 count=0>
+                        ${page.totalCount}
+                    </@_commentList>
+                </a>
+            </p>
+        </div>
+   </fieldset>
+</@_sysAuthorized>
+<@_sysAuthorized roleIds=admin.roles url='report/user'>
+    <fieldset>
+        <legend><@t.page 'report.user'/></legend>
+        <div class="unit">
+            <p>
+                <label><@t.page 'register'/>:</label>
+                <a href="report/user.html" icon="<i class='icon-male icon-large'></i>" title="<@t.page 'report.user'/>" target="navTab" external="true" rel="report/user">
+                    <@_sysUserList startRegisteredDate=.now?long?number_to_date?string>
+                       ${page.totalCount}
+                    </@_sysUserList>
+                </a>
+            </p>
+            <p>
+                <label><@t.page 'login'/>:</label>
+                <a href="report/user.html" icon="<i class='icon-male icon-large'></i>" title="<@t.page 'report.user'/>" target="navTab" external="true" rel="report/user">
+                    <@_logLoginList startCreateDate=.now?long?number_to_date?string>
+                       ${page.totalCount}
+                    </@_logLoginList>
+                </a>
+            </p>
+            <p>
+                <label><@t.page 'operate'/>:${.now?long?number_to_date?string}</label>
+                <a href="report/user.html" icon="<i class='icon-male icon-large'></i>" title="<@t.page 'report.user'/>" target="navTab" external="true" rel="report/user">
+                    <@_logOperateList startCreateDate=.now?long?number_to_date?string>
+                       ${page.totalCount}
+                    </@_logOperateList>
+                </a>
+            </p>
+        </div>
+    </fieldset>
+</@_sysAuthorized>
+<@_version>
+    <fieldset>
+        <legend><@t.page 'system'/></legend>
+        <div class="unit">
+            <p id="cmsVersion">
+                <label><@t.page 'publiccms'/>:</label>
+                <a href="//www.publiccms.com/" target="navTab" rel="publiccms.com" icon="<i class='icon-home icon-large'></i>" title="<@t.page 'publiccms_website'/>">${cms}</a>
+            </p>
+            <script>
+                $.getJSON('//cms.publiccms.com/api/directive/version',function(data){
+                    if($('#cmsVersion a').eq(0).text()!==data.cms){
+                        $('#cmsVersion a').eq(0).append('[<em style="color:red"><@t.page 'version.old'/></em>]');
+                    } else {
+                        $('#cmsVersion a').eq(0).append('[<em style="color:green"><@t.page 'version.new'/></em>]');
+                    }
+                });
+            </script>
+    <@_systemProperties>
+            <p>
+                <label><@t.page 'os.timezone'/>:</label>${.vars['user.timezone']!}
+            </p>
+    </@_systemProperties>
+    <@_masterSite>
+            <p>
+                <label>${master?then(t.pageMessage('cluster.master'),t.pageMessage('cluster.normal'))}:</label>
+                <a href="sysCluster/list.html" icon="<i class='icon-code-fork icon-large'></i>" title="<@t.menu 'cluster'/>" target="navTab" rel="sysCluster/list">${cluster}</a>
+            </p>
+        <@_disk>
+            <p>
+                <label><@t.page 'data.directory'/>:</label>
+                <a href="sysSite/monitor.html" icon="<i class='icon-check-sign icon-large'></i>" title="<@t.page 'system_monitor'/>" target="navTab" rel="sysSite/monitor" external="true">${(rootPath)!}</a>
+            </p>
+            <p>
+                <label><@t.page 'disk_space'/>:</label><@t.fileSize totalSpace/>
+            </p>
+        </@_disk>
+            <div class="divider"></div>
+            <div class="unit">
+                <p>
+                    <label><@t.page 'site.count'/>:</label>
+                    <a href="sysSite/list.html" icon="<i class='icon-sitemap icon-large'></i>" title="<@t.menu 'site_list'/>" target="navTab" rel="sysSite/list"><@_sysSiteList count=0>${page.totalCount}</@_sysSiteList></a>
+                </p>
+                <p>
+                    <label><@t.page 'domain.count'/>:</label>
+                    <a href="sysDomain/list.html" icon="<i class='icon-qrcode icon-large'></i>" title="<@t.menu 'site_domain_list'/>" target="navTab" rel="sysDomain/list"><@_sysDomainList advanced=true count=0>${page.totalCount}</@_sysDomainList></a>
+                </p>
+            </div>
+    </@_masterSite>
+        </div>
+    </fieldset>
+</@_version>
+</div>

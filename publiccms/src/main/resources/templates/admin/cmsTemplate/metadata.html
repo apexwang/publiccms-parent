@@ -1,0 +1,153 @@
+<@_metadata path=path><#assign a=object/></@_metadata>
+<form method="post" action="cmsTemplate/saveMetaData.do?navTabId=cmsTemplate/list" class="pageForm required-validate" onsubmit="return validateCallback(this, navTabAjaxDone);">
+    <input type="hidden" name="_csrf" value="<@_csrfToken admin=true/>"/>
+    <div class="formBar">
+        <ul>
+        <#if !a?has_content>
+            <li><a class="button" href="cmsTemplate/demo.html" target="dialog" mask="true"><@t.page 'template.example'/></a></li>
+        <#else>
+            <#if !site.parentId?has_content>
+                 <li><a class="button" href="cmsTemplate/delete.do?path=${(path?url)!}&navTabId=cmsTemplate/list&_csrf=<@_csrfToken admin=true/>" title="<@t.page 'confirm.delete_file'/>" target="ajaxTodo"><@t.page 'button.delete'/></a></li>
+            </#if>
+            <li><a class="button" href="cmsTemplate/content.html?path=${(path?url)!}" target="ajax" rel="cmsTemplateBox"><@t.page 'template.content'/></a></li>
+        </#if>
+        <#if site.parentId?has_content>
+            <li><button type="button" class="buttonDisabled"><@t.page 'site.parent_maintain'/></button></li>
+        <#else>
+            <li><button type="submit" class="buttonActive"><@t.page 'button.save'/></button></li>
+        </#if>
+        </ul>
+    </div>
+    <div class="pageFormContent" layoutH="50">
+        <dl class="nowrap">
+            <dt><@t.page 'path'/>:</dt></dt>
+            <dd>
+                <input name="path" class="required" type="text" size="50" value="${(path)!}"/>
+                <span class="info"><@t.page 'template_path.description'/></span>
+            </dd>
+        </dl>
+        <dl class="nowrap">
+            <dt><@t.page 'alias'/>:</dt></dt>
+            <dd>
+                <input name="alias" type="text" maxlength="40" size="20" value="${(a.alias)!}"/>
+                <#if site.useStatic>
+                    <label>
+                        <input name="useStatic" type="checkbox"/>
+                        <@t.page 'site.enable_static'/>
+                    </label>
+                </#if>
+                <label>
+                    <input name="useDynamic" type="checkbox"/>
+                    <@t.page 'allow_dynamic'/>
+                </label>
+            </dd>
+        </dl>
+        <script>
+        $('input[name=useStatic]',navTab.getCurrentPanel()).on('change',function(){
+            if($(this).is(':checked')){
+                $('input[name=publishPath]',navTab.getCurrentPanel()).addClass('required');
+                $('.useStatic',navTab.getCurrentPanel()).show();
+            }else{
+                $('input[name=publishPath]',navTab.getCurrentPanel()).removeClass('required').val('');
+                $('.useStatic',navTab.getCurrentPanel()).hide();
+            }
+        });
+        $('input[name=useDynamic]',navTab.getCurrentPanel()).on('change',function(){
+            if($(this).is(':checked')){
+                $('.useDynamic',navTab.getCurrentPanel()).show();
+            }else{
+                $('.useDynamic',navTab.getCurrentPanel()).hide();
+            }
+        });
+        </script>
+    <#if site.useStatic>
+        <fieldset class="useStatic" style="display:none">
+            <legend><@t.page 'static_config'/></legend>
+            <dl class="nowrap">
+                <dt><@t.page 'publish_path'/>:</dt>
+                <dd>
+                    <input name="publishPath" type="text" maxlength="50" size="50" value="${(a.publishPath)!}"/>
+                </dd>
+            </dl>
+        </fieldset>
+    </#if>
+        <fieldset class="useDynamic" style="display:none">
+            <legend><@t.page 'dynamic_config'/></legend>
+            <dl class="nowrap">
+                <dt><@t.page 'dynamic_config.need_login'/>:</dt>
+                <dd>
+                    <label><input name="needLogin" type="checkbox"/></label>
+                    <span class="info"><@t.page 'dynamic_config.need_login.description'/>:<a href="sysConfigData/edit.html?code=site" target="navTab" rel="sysConfigData/edit" icon="<i class='icon-edit icon-large'></i> "><@t.page 'server_config.site'/></a></span>
+                </dd>
+            </dl>
+            <dl class="nowrap">
+                <dt><@t.page 'dynamic_config.accept_parameter'/>:</dt>
+                <dd>
+                    <input name="acceptParameters" type="text" value="${(a.acceptParameters)!}" size="80"/>
+                    <span class="info"><@t.page 'dynamic_config.accept_parameter.description'/></span>
+                </dd>
+            </dl>
+            <dl class="nowrap">
+                <dt><@t.page 'dynamic_config.need_body'/>:</dt>
+                <dd>
+                    <label><input name="needBody" type="checkbox"/></label>
+                    <span class="info"><@t.page 'dynamic_config.need_body.description'/></span>
+                </dd>
+            </dl>
+            <dl class="nowrap">
+                <dt><@t.page 'dynamic_config.content-type'/>:</dt>
+                <dd>
+                    <input name="contentType" type="text" value="${(a.contentType)!}"/>
+                    <a class="btnLook" href="cmsTemplate/contentTypeLookup.html" lookupGroup=""><@t.page 'dynamic_config.content-type.select'/></a>
+                    <span class="info"><@t.page 'dynamic_config.content-type.description'/></span>
+                </dd>
+            </dl>
+            <dl class="nowrap">
+                <dt><@t.page 'dynamic_config.cache'/>:</dt>
+                <dd>
+                    <input name="cacheTime" class="required digits" type="text" value="${(a.cacheTime)!0}"/>
+                    <span class="info"><@t.page 'dynamic_config.cache.description'/></span>
+                </dd>
+            </dl>
+        </fieldset>
+<script>
+<#if site.useStatic&&(a.publishPath)?has_content>
+    $('input[name=useStatic]',navTab.getCurrentPanel()).click();
+</#if>
+<#if (a.useDynamic)?has_content&&a.useDynamic||!a?has_content>
+    $('input[name=useDynamic]',navTab.getCurrentPanel()).click();
+</#if>
+<#if (a.needLogin)?has_content&&a.needLogin>
+    $('input[name=needLogin]',navTab.getCurrentPanel()).click();
+</#if>
+<#if (a.needBody)?has_content&&a.needBody>
+    $('input[name=needBody]',navTab.getCurrentPanel()).click();
+</#if>
+</script>
+        <fieldset>
+            <legend><@t.page 'metadata.extend_field'/></legend>
+            <#include '../include_page/extends.html'/>
+            <#assign extendList=(a.extendList)![]/>
+            <@extends 'extendList' extendList/>
+        </fieldset>
+<#if a?has_content>
+        <textarea name="content" style="display:none"><@_templateContent path=path>${(object)!}</@_templateContent></textarea>
+<#else>
+        <textarea name="content" style="display:none">&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;New PublicCMS Template&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;main&gt;New PublicCMS Template&lt;/main&gt;
+<@_version>
+    <#if !authorizationEdition>
+    &lt;footer&gt;
+        &lt;p&gt;Powered by &lt;a href=&quot;http://www.publiccms.com/&quot;&gt;PublicCMS&lt;/a&gt; &lt;/p&gt;
+    &lt;/footer&gt;
+    </#if>
+</@_version>
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</#if>
+    </div>
+</form>
