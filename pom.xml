@@ -53,7 +53,7 @@
         <!-- https://mvnrepository.com/artifact/com.zaxxer/HikariCP -->
         <version.hikariCP>3.3.1</version.hikariCP>
         <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
-        <version.mysql>8.0.15</version.mysql>
+        <version.mysql>8.0.16</version.mysql>
         <!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
         <version.poi>4.0.1</version.poi>
         <!-- http://mvnrepository.com/artifact/commons-fileupload/commons-fileupload -->
